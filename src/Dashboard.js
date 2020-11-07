@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import uniqid from 'uniqid';
-import { DragDropContext } from 'react-beautiful-dnd';
 
 import _get from 'lodash/get';
 import _map from 'lodash/map';
 import _keyBy from 'lodash/keyBy';
 
-import StreamCreator, { streamCreatorActions } from './components/streamCreator';
+import { streamCreatorActions } from './components/streamCreator';
 import Stream, { streamActions }   from './components/stream';
 
 import './dashboard.css';
@@ -17,6 +16,8 @@ const DEFAULT_STATE = {
   cardsById: {},
   streamOrder: [],
 }
+
+const STREAM_CONFIGS = [{ id: 'planned', label: 'Planned'}, { id: 'started', label: 'Started'},{ id: 'done', label: 'Done'}];
 
 const Dashboard = props => {
   const { state: initialState, updateState }  = props;
@@ -67,67 +68,13 @@ const Dashboard = props => {
     }
   }, []);
 
-  const handleDragEnd = useCallback(result => {
-    const { destination, source, draggableId} = result;
-    if(!destination) {
-      return;
-    }
-    if(destination.droppableId === source.droppableId && destination.index === source.index) {
-      return;
-    }
-    setState(prevState => {
-      const startStream= _get(prevState, `streamsById.${source.droppableId}`);
-      const endStream = _get(prevState, `streamsById.${destination.droppableId}`);
-      if(startStream ===endStream) {
-        const stream = _get(prevState, `streamsById.${source.droppableId}`);
-        const newCardIds = [..._get(stream, 'cardIds',[])];
-        newCardIds.splice(source.index, 1);
-        newCardIds.splice(destination.index, 0, draggableId);
-        const newStream = {
-          ...stream,
-          cardIds: newCardIds,
-        }
-        const newState = {
-          ...prevState,
-          streamsById: {
-            ...prevState.streamsById,
-            [newStream.id]: newStream,
-          }
-        };
-        return newState;
-      };
-
-      const startStreamCardIds = [..._get(startStream, 'cardIds',[]) ];
-      startStreamCardIds.splice(source.index,1);
-      const newStartStream = {
-        ...startStream,
-        cardIds: startStreamCardIds,
-      };
-      const endStreamCardIds = [..._get(endStream, 'cardIds',[]) ];
-      endStreamCardIds.splice(destination.index,0,draggableId);
-      const newEndStream = {
-        ...endStream,
-        cardIds: endStreamCardIds,
-      };
-      return {
-        ...prevState,
-        streamsById: {
-          ..._get(prevState, 'streamsById'),
-          [newStartStream.id]: newStartStream,
-          [newEndStream.id]: newEndStream,
-        }
-      }
-
-    });
-  },[])
   const streams = _map(state.streamOrder,streamId => {
     const stream = _get(state, `streamsById.${streamId}`, {});
     const cards = _map(stream.cardIds, cardId => _get(state,`cardsById.${cardId}`));
     return  <Stream key={stream.id} stream={stream} cards={cards} onAction={handleAction}/>
   });
   return <div className="dashboard">
-    <DragDropContext onDragEnd={handleDragEnd}>{streams}</DragDropContext>
-    <div className="streamCreatorContainer"><StreamCreator onAction={handleAction}/></div>
+    {streams}
   </div>
 };
 

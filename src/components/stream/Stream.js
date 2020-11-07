@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import uniqid from 'uniqid';
 
@@ -6,8 +6,6 @@ import _map from 'lodash/map';
 import _filter from 'lodash/filter';
 import _reduce from 'lodash/reduce';
 
-import DroppableWrapper from '../../baseComponents/DroppableWrapper';
-import DraggableWrapper from '../../baseComponents/DraggableItemWrapper';
 import Card, { cardActions }  from './components/card';
 import CardCreator, { cardCreatorActions } from './components/cardCreator';
 
@@ -52,13 +50,11 @@ const Stream = props => {
     };
   }, [streamId, cards, onAction]);
 
-  const cardsNode = _map(cards, (card, index) => <DraggableWrapper draggableId={card.id} index={index} key={card.id}><Card {...card} onAction={handleAction}/></DraggableWrapper>);
+  const cardsNode = _map(cards, (card, index) => <Card {...card} onAction={handleAction}/>);
 
   return (<div className="stream">
     <div className='streamHeader'> <div className="streamHeaderContent">{name}</div></div>
-    <DroppableWrapper droppableId={streamId} className="streamContent">
       {cardsNode}
-    </DroppableWrapper>
     <CardCreator onAction={handleAction}/>
   </div>);
 }
