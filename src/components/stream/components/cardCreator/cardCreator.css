@@ -1,0 +1,20 @@
+.cardCreator {
+    height: 4rem;
+    padding: 0.8rem;
+    display: flex;
+    align-items: center;
+    font-size: 1.6rem;
+    color: #5e6c84;
+    margin: 0.4rem 0;
+    border-radius: 0.2rem;
+    cursor: pointer;
+}
+
+.cardCreator:hover {
+    color: #172b4d;
+    background: rgba(9,30,66,0.1);
+}
+
+.cardCreator__label {
+    margin-left: 0.4rem;
+}

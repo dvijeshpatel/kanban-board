@@ -1,0 +1,15 @@
+.dashboard {
+    display: flex;
+    overflow-x: auto;
+    align-items: flex-start;
+    height: 100%;
+    width: 100%;
+    padding: 2rem 0px;
+    background: rgb(75, 191, 107);
+}
+
+.streamCreatorContainer {
+    width: 30rem;
+    margin-left: 0.8rem;
+    flex: 0 0 auto;
+}
