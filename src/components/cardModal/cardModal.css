@@ -1,3 +1,15 @@
+.modalContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.cardContainer {
+    background: #ebecf0;
+    padding: 1rem;
+    width: 30rem;
+    font-size: 1.2rem;
+}
+
 .cardCreatorDialog {
     padding: 0.8rem 0;
 }
@@ -12,6 +24,19 @@
     border-radius: 0.2rem;
     margin-bottom: 0.8rem;
     font-size: 1.3rem;
+}
+
+.cardCreatorDialog__dateInput {
+    display: block;
+    margin-bottom: 0.8rem;
+}
+
+.cardCreatorDialog__statusInput {
+    margin-bottom: 0.8rem;
+}
+
+.cardCreatorDialog__assigneeInput {
+    margin-bottom: 0.8rem;
 }
 
 .cardCreatorDialog__footer {

@@ -1,13 +1,28 @@
 .dashboard {
-    display: flex;
-    overflow-x: auto;
-    align-items: flex-start;
     height: 100%;
     width: 100%;
-    padding: 2rem 0px;
+    padding: 2rem;
     background: rgb(75, 191, 107);
 }
 
+.dashboardHeader {
+    height: 4rem;
+    background: #ebecf0;
+    margin: 0.8rem;
+}
+
+.headerTitle, .memberList {
+    height: 4rem;
+    padding: 0.8rem;
+    display: flex;
+    font-weight: bold;
+    font-size: 1.6rem;
+}
+.streamWorkspace {
+    display: flex;
+    overflow-x: auto;
+    align-items: flex-start;
+}
 .streamCreatorContainer {
     width: 30rem;
     margin-left: 0.8rem;

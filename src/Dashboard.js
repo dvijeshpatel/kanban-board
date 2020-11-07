@@ -1,27 +1,30 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import uniqid from 'uniqid';
 
-import _get from 'lodash/get';
+
 import _map from 'lodash/map';
-import _keyBy from 'lodash/keyBy';
+import _filter from 'lodash/filter';
 
-import { streamCreatorActions } from './components/streamCreator';
-import Stream, { streamActions }   from './components/stream';
+import Stream  from './components/stream';
+import CardModal, { cardCreatorDialogActions } from './components/cardModal';
+
+import { STREAM_CONFIGS, MEMBERS } from './constants';
 
 import './dashboard.css';
 
-const DEFAULT_STATE = {
-  streamsById: {},
-  cardsById: {},
-  streamOrder: [],
-}
+const DEFAULT_STATE = { cards: []};
 
-const STREAM_CONFIGS = [{ id: 'planned', label: 'Planned'}, { id: 'started', label: 'Started'},{ id: 'done', label: 'Done'}];
+
+const getCardsFromStream = (cards, stream) => {
+  return _filter(cards, card => card.streamId === stream.id);
+}
 
 const Dashboard = props => {
   const { state: initialState, updateState }  = props;
+  const [cardModalState, setCardModalState] = useState({ isOpen: false, card: {}});
   const [ state, setState ] = useState(initialState);
+
+  const { cards } = state;
 
   useEffect(() => {
     updateState(state);
@@ -30,51 +33,54 @@ const Dashboard = props => {
   const handleAction = useCallback(action => {
     const { type, payload } = action;
     switch (type) {
-      case streamActions.ON_CARDS_CHANGE: {
-        setState(prevState => {
-          const { streamId, cards } = payload;
-          const cardIds = _map(cards, 'id');
-          const cardsById = _keyBy(cards, 'id');
-          return {
-            ...prevState,
-            streamsById: {
-              ..._get(prevState, 'streamsById'),
-              [streamId]: {
-                ..._get(prevState, `streamsById.${streamId}`),
-                cardIds,
+      case cardCreatorDialogActions.CLOSE_CARD_CREATOR: {
+        setCardModalState({ ...cardModalState, isOpen: false, card: {}});
+        break;
+      };
+      case cardCreatorDialogActions.ON_SUBMIT: {
+        const { card, mode } = payload;
+        if(mode === 'CREATE') {
+          setState(prevState => {
+            return ({
+              ...prevState,
+              cards: [...prevState?.cards, card],
+            })
+          })
+          break;
+        }
+        if(mode === 'EDIT') {
+          setState(prevState => {
+            const newCards = _map(prevState?.cards, prevCard => {
+              if(prevCard?.id === card.id) {
+                return card;
               }
-            },
-            cardsById: {
-              ..._get(prevState, 'cardsById'),
-              ...cardsById,
-            }
-          }
-        });
-        break;
+              return prevCard;
+            });
+            return ({
+              ...prevState,
+              cards: newCards,
+            })
+          })
+          break;
+        }
+      };
+      case 'OPEN_CARD_MODAL': {
+        setCardModalState({ isOpen: true, card: payload?.card, mode: payload?.mode })
       }
-      case streamCreatorActions.ADD_STREAM: {
-        const { name } =payload;
-        const id = uniqid();
-        setState( prevState => ({
-          ...prevState,
-          streamsById: {
-            ..._get(prevState, 'streamsById'),
-            [id]: { id, name,  cardsById: {} },
-          },
-          streamOrder: [..._get(prevState, 'streamOrder',[]), id],
-        }));
-        break;
-      }
+
     }
   }, []);
 
-  const streams = _map(state.streamOrder,streamId => {
-    const stream = _get(state, `streamsById.${streamId}`, {});
-    const cards = _map(stream.cardIds, cardId => _get(state,`cardsById.${cardId}`));
-    return  <Stream key={stream.id} stream={stream} cards={cards} onAction={handleAction}/>
-  });
+
+  const streams = _map(STREAM_CONFIGS,stream => <Stream key={stream.id} stream={stream} cards={getCardsFromStream(cards, stream)} onAction={handleAction}/>);
+
   return <div className="dashboard">
-    {streams}
+    <div className="dashboardHeader">
+      <div className="headerTitle">Task Board</div>
+      <div className="memberList">{`Members: ${MEMBERS.map(member => member.name).join(', ')}`}</div>
+    </div>
+    <div className="streamWorkspace">{streams}</div>
+    {cardModalState.isOpen ? <CardModal mode={cardModalState.mode} card={cardModalState.card} onAction={handleAction} open/> : null }
   </div>
 };
 

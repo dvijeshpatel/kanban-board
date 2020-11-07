@@ -1,4 +1,3 @@
-import Stream, { streamActions }  from './Stream';
+import Stream  from './Stream';
 
-export { streamActions };
 export default Stream;

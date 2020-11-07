@@ -1,4 +1,3 @@
-import CardCreator, { cardCreatorActions} from './CardCreator';
+import CardCreator from './CardCreator';
 
-export { cardCreatorActions };
 export default  CardCreator;

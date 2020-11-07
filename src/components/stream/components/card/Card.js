@@ -1,10 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
-import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
-
-import CardCreatorDialog, { cardCreatorDialogActions, MODES } from '../cardCreatorDailog';
 import './card.css';
 
 const cardActions = {
@@ -14,55 +10,30 @@ const cardActions = {
 }
 
 const Card = props => {
-  const { id, content, onAction } = props;
-  const [ isCardEditorOpen, setIsCardEditorOpen ] = useState(false);
+  const { card, onAction } = props;
 
-  const handleAction = useCallback(action => {
-    const { type, payload } = action;
-    switch(type) {
-      case cardCreatorDialogActions.CLOSE_CARD_CREATOR: {
-        setIsCardEditorOpen(false);
-        break;
-      }
-      case cardCreatorDialogActions.ON_SUBMIT: {
-        onAction({ type: cardActions.ON_CHANGE_CARD, payload: { id, content: payload.content }});
-        break;
-      }
-      case cardActions.OPEN_CARD_EDITOR: {
-        setIsCardEditorOpen(true);
-        break;
-      }
-      case cardActions.ON_DELETE_CARD: {
-        onAction({ type: cardActions.ON_DELETE_CARD, payload: { id }});
-        break;
-      }
-    }
-
-  },[onAction]);
+  const { description, date, assignee } = card;
 
   const handleOpenCardEditor = useCallback(() => {
-    handleAction({ type: cardActions.OPEN_CARD_EDITOR });
-  },[handleAction]);
+    onAction({ type: 'OPEN_CARD_MODAL', payload: { card, mode: 'EDIT' } });
+  },[card, onAction]);
 
-  const handleDeleteCard = useCallback(() => {
-    handleAction({ type: cardActions.ON_DELETE_CARD });
-  },[handleAction]);
 
-  if(isCardEditorOpen) {
-    return <CardCreatorDialog mode={MODES.EDIT} content={content} onAction={handleAction} />;
-  }
-  return <div className="card">
-    {content}
-    <div className="cardActions">
-      <EditOutlinedIcon classes={{ root: 'cardAction'}} onClick={handleOpenCardEditor}/>
-      <DeleteOutlinedIcon classes={{ root: 'cardAction'}} onClick={handleDeleteCard}/>
-    </div>
+  return <div className="card" onDoubleClick={handleOpenCardEditor}>
+    <div className="description">{description}</div>
+    <div className="date">{`DueDate: ${date}`}</div>
+    <div className="assignee">{`Assigne: ${assignee}`}</div>
   </div>;
 };
 
 Card.propTypes = {
-  id: PropTypes.string.isRequired,
-  content: PropTypes.string,
+  card: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    date: PropTypes.string,
+    streamId: PropTypes.string,
+    assignee: PropTypes.string,
+  }),
   onAction: PropTypes.func,
 };
 

@@ -12,25 +12,18 @@
     background: #f4f5f7;
 }
 
-.cardActions {
-    position: absolute;
-    margin: 0.4rem;
-    top: 0;
-    right: 0;
-    visibility: hidden;
-}
-
-.cardActions .cardAction {
-    margin: 0.2rem;
-    font-size: 2rem;
-    cursor: pointer;
-    border-radius: 0.2rem;
-}
-
-.cardAction:hover {
-    background: rgba(9,30,66,0.1);
-}
-
 .card:hover .cardActions {
     visibility: visible;
+}
+
+.description {
+    margin-bottom: 0.8rem;
+}
+
+.date {
+    margin-bottom: 0.8rem;
+}
+
+.assignee {
+    margin-bottom: 0.8rem;
 }
